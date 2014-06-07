@@ -30,7 +30,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.IBinder;
-import android.os.UserHandle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -45,7 +44,6 @@ public class SwitchService extends Service {
     private SharedPreferences mPrefs;
     private SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener;
     private SwitchConfiguration mConfiguration;
-    private int mUserId = -1;
 
     private static boolean mIsRunning;
 
@@ -61,8 +59,7 @@ public class SwitchService extends Service {
         if(mConfiguration.mRestrictedMode){
             createErrorNotification();
         }
-        mUserId = UserHandle.myUserId();
-        Log.d(TAG, "started SwitchService " + mUserId);
+        Log.d(TAG, "started SwitchService ");
 
         mManager = new SwitchManager(this);
 
@@ -73,7 +70,6 @@ public class SwitchService extends Service {
         filter.addAction(RecentsReceiver.ACTION_HANDLE_HIDE);
         filter.addAction(RecentsReceiver.ACTION_HANDLE_SHOW);
         filter.addAction(RecentsReceiver.ACTION_TOGGLE_OVERLAY);
-        filter.addAction(Intent.ACTION_USER_SWITCHED);
         filter.addAction(Intent.ACTION_SHUTDOWN);
 
         registerReceiver(mReceiver, filter);
@@ -97,7 +93,7 @@ public class SwitchService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "stopped SwitchService " + mUserId);
+        Log.d(TAG, "stopped SwitchService");
 
         unregisterReceiver(mReceiver);
         mManager.killManager();
@@ -164,16 +160,6 @@ public class SwitchService extends Service {
                     hide();
                 } else {
                     show(context);
-                }
-            } else if (Intent.ACTION_USER_SWITCHED.equals(action)) {
-                int userId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
-                Log.d(TAG, "user switch " + mUserId + "->" + userId);
-                if (userId != mUserId){
-                    mManager.getSwitchGestureView().hide();
-                } else {
-                    if (mConfiguration.mDragHandleShow){
-                        mManager.getSwitchGestureView().show();
-                    }
                 }
             } else if (Intent.ACTION_SHUTDOWN.equals(action)) {
                 Log.d(TAG, "ACTION_SHUTDOWN");
