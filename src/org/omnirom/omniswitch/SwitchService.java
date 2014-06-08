@@ -144,10 +144,6 @@ public class SwitchService extends Service {
                     show(context);
 
                 }
-            } else if (ACTION_SHOW_OVERLAY2.equals(action)) {
-                if (!mManager.isShowing()) {
-                    mManager.show();
-                }
             } else if (ACTION_HIDE_OVERLAY.equals(action)) {
                 if (mManager.isShowing()) {
                     hide();
