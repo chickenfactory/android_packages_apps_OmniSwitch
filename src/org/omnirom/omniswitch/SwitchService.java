@@ -69,7 +69,6 @@ public class SwitchService extends Service {
         filter.addAction(RecentsReceiver.ACTION_HIDE_OVERLAY);
         filter.addAction(RecentsReceiver.ACTION_HANDLE_HIDE);
         filter.addAction(RecentsReceiver.ACTION_HANDLE_SHOW);
-        filter.addAction(RecentsReceiver.ACTION_TOGGLE_OVERLAY);
         filter.addAction(Intent.ACTION_SHUTDOWN);
 
         registerReceiver(mReceiver, filter);
@@ -122,7 +121,6 @@ public class SwitchService extends Service {
         public static final String ACTION_HIDE_OVERLAY = "org.omnirom.omniswitch.ACTION_HIDE_OVERLAY";
         public static final String ACTION_HANDLE_HIDE = "org.omnirom.omniswitch.ACTION_HANDLE_HIDE";
         public static final String ACTION_HANDLE_SHOW = "org.omnirom.omniswitch.ACTION_HANDLE_SHOW";
-        public static final String ACTION_TOGGLE_OVERLAY = "org.omnirom.omniswitch.ACTION_TOGGLE_OVERLAY";
 
         private void show(Context context) {
             mManager.show();
@@ -144,6 +142,11 @@ public class SwitchService extends Service {
                         Log.d(TAG, "ACTION_SHOW_OVERLAY " + System.currentTimeMillis());
                     }
                     show(context);
+
+                }
+            } else if (ACTION_SHOW_OVERLAY2.equals(action)) {
+                if (!mManager.isShowing()) {
+                    mManager.show();
                 }
             } else if (ACTION_HIDE_OVERLAY.equals(action)) {
                 if (mManager.isShowing()) {
@@ -155,12 +158,6 @@ public class SwitchService extends Service {
                 }
             } else if (ACTION_HANDLE_HIDE.equals(action)){
                 mManager.getSwitchGestureView().hide();
-            } else if (ACTION_TOGGLE_OVERLAY.equals(action)) {
-                if (mManager.isShowing()) {
-                    hide();
-                } else {
-                    show(context);
-                }
             } else if (Intent.ACTION_SHUTDOWN.equals(action)) {
                 Log.d(TAG, "ACTION_SHUTDOWN");
                 mManager.shutdownService();
